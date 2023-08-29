@@ -1,19 +1,21 @@
 from collections import UserDict
 
 class Field:
-    def __init__(self, value):
+    def __init__(self, value=None):
         self.value = value
 
 class Name(Field):
-    pass
+    def __init__(self, value):
+        super().__init__(value)
 
 class Phone(Field):
-    pass
+    def __init__(self, value):
+        super().__init__(value)
 
 class Record:
-    def __init__(self, name):
-        self.name = Name(name)
-        self.phones = []
+    def __init__(self, name, *phones):
+        self.name = name
+        self.phones = list(phones)
 
     def add_phone(self, phone):
         if isinstance(phone, Phone):
@@ -35,12 +37,8 @@ class Record:
             raise ValueError("phone not found")
 
 class AddressBook(UserDict):
-    def add_record(self, name, phones=None):
-        record = Record(name)
-        if phones:
-            for phone in phones:
-                record.add_phone(phone)
-        self.data[name] = record
+    def add_record(self, record):
+        self.data[record.name.value] = record
 
     def delete_record(self, name):
         del self.data[name]
@@ -74,5 +72,18 @@ class AddressBook(UserDict):
                     break
         return results
 
+
 if __name__ == "__main__":
-    address_book = AddressBook()
+    name = Name('Bill')
+    phone = Phone('1234567890')
+    rec = Record(name, phone)
+    ab = AddressBook()
+    ab.add_record(rec)
+
+    assert isinstance(ab['Bill'], Record)
+    assert isinstance(ab['Bill'].name, Name)
+    assert isinstance(ab['Bill'].phones, list)
+    assert isinstance(ab['Bill'].phones[0], Phone)
+    assert ab['Bill'].phones[0].value == '1234567890'
+
+    print('All Ok)')
